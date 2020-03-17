@@ -269,7 +269,7 @@ NodeStatistics::AdvancePosition (Ptr<Node> node, int stepsSize, int stepsTime)
   pos.x += stepsSize;
   SetPosition (node, pos);
   NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds () << " sec; setting new position to " << pos);
-  Simulator::Schedule (Seconds (stepsTime), &NodeStatistics::AdvancePosition, this, node, stepsSize, stepsTime);
+  Simulator::Schedule (MilliSeconds (stepsTime), &NodeStatistics::AdvancePosition, this, node, stepsSize, stepsTime);
 }
 
 Gnuplot2dDataset
@@ -300,7 +300,7 @@ int main (int argc, char *argv[])
   double minPower = 0;
   uint32_t powerLevels = 18;
 
-  uint32_t rtsThreshold = 9999999; // was 2346 earlier
+  uint32_t rtsThreshold = 58346; // was 2346 earlier
   std::string manager = "ns3::mParfWifiManager";
   std::string outputFileName = "parf";
   int ap1_x = 0;
@@ -309,7 +309,8 @@ int main (int argc, char *argv[])
   int sta1_y = 0;
   uint32_t steps = 100;
   uint32_t stepsSize = 1;
-  double stepsTime = 0.1;
+  //double stepsTime = 0.1;
+  uint32_t stepsTime = 100;
 
   CommandLine cmd;
   cmd.AddValue ("manager", "PRC Manager", manager);
@@ -367,7 +368,7 @@ int main (int argc, char *argv[])
   wifiStaDevices.Add (wifi.Install (wifiPhy, wifiMac, wifiStaNodes.Get (0)));
 
   //Configure the AP node
-  wifi.SetRemoteStationManager (manager, "PowerStepSize", UintegerValue (3),"DefaultTxPowerLevel", UintegerValue (maxPower), "RtsCtsThreshold", UintegerValue (rtsThreshold));
+  wifi.SetRemoteStationManager (manager, "PowerStepSize", UintegerValue (1),"DefaultTxPowerLevel", UintegerValue (maxPower), "RtsCtsThreshold", UintegerValue (rtsThreshold));
   wifiPhy.Set ("TxPowerStart", DoubleValue (0));
   wifiPhy.Set ("TxPowerEnd", DoubleValue (30));
   wifiPhy.Set ("TxPowerLevels", UintegerValue (31));
@@ -397,7 +398,7 @@ int main (int argc, char *argv[])
   NodeStatistics statistics = NodeStatistics (wifiApDevices, wifiStaDevices);
 
   //Move the STA by stepsSize meters every stepsTime seconds
-  Simulator::Schedule (Seconds (0.5 + stepsTime), &NodeStatistics::AdvancePosition, &statistics, wifiStaNodes.Get (0), stepsSize, stepsTime);
+  Simulator::Schedule (MilliSeconds (0.5 + stepsTime), &NodeStatistics::AdvancePosition, &statistics, wifiStaNodes.Get (0), stepsSize, stepsTime);
 
   //Configure the IP stack
   InternetStackHelper stack;
@@ -456,9 +457,9 @@ int main (int argc, char *argv[])
   gnuplot.AddDataset (statistics.GetDatafile ());
   gnuplot.GenerateOutput (outfile);
 
-//  if (manager.compare ("ns3::ParfWifiManager") == 0 ||
-  //    manager.compare ("ns3::AparfWifiManager") == 0)
-   // {
+  if (manager.compare ("ns3::mParfWifiManager") == 0 ||
+    manager.compare ("ns3::AparfWifiManager") == 0)
+ {
   std::ofstream outfile2 (("power-" + outputFileName + ".plt").c_str ());
   gnuplot = Gnuplot (("power-" + outputFileName + ".eps").c_str (), "Average Transmit Power");
   gnuplot.SetTerminal ("post eps color enhanced");
@@ -466,7 +467,7 @@ int main (int argc, char *argv[])
   gnuplot.SetTitle ("Average transmit power (AP to STA) vs time");
   gnuplot.AddDataset (statistics.GetPowerDatafile ());
   gnuplot.GenerateOutput (outfile2);
-	//}
+}
 
   Simulator::Destroy ();
 
