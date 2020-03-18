@@ -308,7 +308,7 @@ int main (int argc, char *argv[])
   int sta1_x = 5;
   int sta1_y = 0;
   uint32_t steps = 100;
-  uint32_t stepsSize = 1;
+  uint32_t stepsSize = 3;
   //double stepsTime = 0.1;
   uint32_t stepsTime = 100;
 
@@ -420,8 +420,8 @@ int main (int argc, char *argv[])
   onoff.SetAttribute ("StopTime", TimeValue (Seconds (simuTime)));
   ApplicationContainer apps_source = onoff.Install (wifiApNodes.Get (0));
 
-  apps_sink.Start (Seconds (0.5));
-  apps_sink.Stop (Seconds (simuTime));
+  apps_sink.Start (MilliSeconds (0.5)); //changed Seconds to MilliSeconds
+  apps_sink.Stop (MilliSeconds (simuTime));  //changed Seconds to MilliSeconds
 
   //------------------------------------------------------------
   //-- Setup stats and data collection
@@ -446,11 +446,11 @@ int main (int argc, char *argv[])
   Config::Connect ("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/RemoteStationManager/$" + manager + "/RateChange",
                    MakeCallback (RateCallback));
 
-  Simulator::Stop (Seconds (simuTime));
+  Simulator::Stop (MilliSeconds (simuTime));  //changed Seconds to MilliSeconds
   Simulator::Run ();
 
-  std::ofstream outfile (("throughput-" + outputFileName + ".plt").c_str ());
-  Gnuplot gnuplot = Gnuplot (("throughput-" + outputFileName + ".eps").c_str (), "Throughput");
+  std::ofstream outfile (("throughput_step_3-" + outputFileName + ".plt").c_str ());
+  Gnuplot gnuplot = Gnuplot (("throughput_step_3-" + outputFileName + ".eps").c_str (), "Throughput");
   gnuplot.SetTerminal ("post eps color enhanced");
   gnuplot.SetLegend ("Time (seconds)", "Throughput (Mb/s)");
   gnuplot.SetTitle ("Throughput (AP to STA) vs time");
@@ -460,8 +460,8 @@ int main (int argc, char *argv[])
   if (manager.compare ("ns3::mParfWifiManager") == 0 ||
     manager.compare ("ns3::AparfWifiManager") == 0)
  {
-  std::ofstream outfile2 (("power-" + outputFileName + ".plt").c_str ());
-  gnuplot = Gnuplot (("power-" + outputFileName + ".eps").c_str (), "Average Transmit Power");
+  std::ofstream outfile2 (("power_step_3-" + outputFileName + ".plt").c_str ());
+  gnuplot = Gnuplot (("power_step3-" + outputFileName + ".eps").c_str (), "Average Transmit Power");
   gnuplot.SetTerminal ("post eps color enhanced");
   gnuplot.SetLegend ("Time (seconds)", "Power (mW)");
   gnuplot.SetTitle ("Average transmit power (AP to STA) vs time");
