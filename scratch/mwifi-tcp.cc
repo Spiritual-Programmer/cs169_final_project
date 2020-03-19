@@ -130,7 +130,9 @@ main(int argc, char *argv[])
 
   NetDeviceContainer staDevices;
   staDevices = wifiHelper.Install (wifiPhy, wifiMac, staWifiNode);
-  staDevices = wifiHelper.Install (wifiPhy, wifiMac, staWifiNode2);
+
+  NetDeviceContainer staDevices2;
+  staDevices2 = wifiHelper.Install (wifiPhy, wifiMac, staWifiNode2);
 
   /* Mobility model */
   MobilityHelper mobility;
@@ -154,7 +156,9 @@ main(int argc, char *argv[])
   Ipv4InterfaceContainer apInterface;
   apInterface = address.Assign (apDevice);
   Ipv4InterfaceContainer staInterface;
+  Ipv4InterfaceContainer staInterface2;
   staInterface = address.Assign (staDevices);
+  staInterface2 = address.Assign (staDevices2);
 
   /* Populate routing table */
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
@@ -188,6 +192,7 @@ main(int argc, char *argv[])
       wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO);
       wifiPhy.EnablePcap ("AccessPoint", apDevice);
       wifiPhy.EnablePcap ("Station", staDevices);
+      wifiPhy.EnablePcap ("Station", staDevices2);
     }
 
   /* Start Simulation */
