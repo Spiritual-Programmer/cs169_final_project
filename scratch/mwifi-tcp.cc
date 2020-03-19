@@ -181,8 +181,8 @@ main(int argc, char *argv[])
   sinkApp.Start (Seconds (0.0));
   serverApp.Start (Seconds (1.0));
   serverApp.Stop (Seconds (10.9));
-  serverApp2.Start (Seconds (11.0));
-  serverApp2.Stop (Seconds (20.9));
+  serverApp2.Start (Seconds (1.0));
+  serverApp2.Stop (Seconds (10.9));
   Simulator::Schedule (Seconds (1.1), &CalculateThroughput);
   //Simulator::Schedule (Seconds (11.1), &CalculateThroughput);
 
@@ -196,7 +196,7 @@ main(int argc, char *argv[])
     }
 
   /* Start Simulation */
-  Simulator::Stop (Seconds (simulationTime + 11));
+  Simulator::Stop (Seconds (simulationTime + 1));
   Simulator::Run ();
   Simulator::Destroy ();
 
